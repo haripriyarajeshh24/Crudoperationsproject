@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data;
 using System.Data.SqlClient;
 
 
@@ -21,8 +22,11 @@ namespace Crudoperationsproject
                 int age = int.Parse(Console.ReadLine());
                 Console.WriteLine("Enter Department");
                 string department = Console.ReadLine();
-                string insertQuery = "INSERT INTO Students (Name, Age, Department) VALUES ('" + name + "'," + age + ", '" + department + "')";
+                string insertQuery = "INSERT INTO Students (Name, Age, Department) VALUES (@Name, @Age, @Department)";
                 SqlCommand insertCommand = new SqlCommand(insertQuery, sqlConnection);
+                insertCommand.Parameters.AddWithValue("@Name", name);
+                insertCommand.Parameters.AddWithValue("@Age", age);
+                insertCommand.Parameters.AddWithValue("@Department", department);
                 insertCommand.ExecuteNonQuery();
                 Console.WriteLine("Datas inserted successfully");
                 string selectallquery = "select * from Students";
@@ -32,7 +36,7 @@ namespace Crudoperationsproject
                 while (datareader.Read())
                 {
                     Console.WriteLine("Id : " + datareader.GetValue(0).ToString());
-                    Console.WriteLine("Name : " + datareader.GetValue(1).ToString()); 
+                    Console.WriteLine("Name : " + datareader.GetValue(1).ToString());
                     Console.WriteLine("Age : " + datareader.GetValue(2).ToString());
                     Console.WriteLine("Department : " + datareader.GetValue(3).ToString());
                 }
@@ -41,14 +45,18 @@ namespace Crudoperationsproject
                 int stud_id = int.Parse(Console.ReadLine());
                 Console.WriteLine("Enter the depertament to be updated");
                 string change_dept = Console.ReadLine();
-                string updatequery = "Update Students Set Department ='" + change_dept + "' Where StudentID = " + stud_id + " ";
+                string updatequery = "Update Students Set Department = @Department Where StudentID = @stud_id";
                 SqlCommand updateCommand = new SqlCommand(updatequery, sqlConnection);
+                updateCommand.Parameters.AddWithValue("@stud_id", stud_id);
+                updateCommand.Parameters.AddWithValue("@Department", change_dept);
                 updateCommand.ExecuteNonQuery();
                 Console.WriteLine("Department updated successfully");
                 Console.WriteLine("Enter student id to be removed");
                 int delete_id = int.Parse(Console.ReadLine());
-                string deleteQuery = "Delete from Students where StudentID=" + delete_id + "";
-                SqlCommand deleteCommand = new SqlCommand(deleteQuery, sqlConnection);
+                string deleteQuery = "Delete from Students where StudentID = @delete_id";
+                SqlCommand deleteCommand = new SqlCommand("DeleteStudents", sqlConnection);
+                deleteCommand.CommandType = CommandType.StoredProcedure;
+                deleteCommand.Parameters.AddWithValue("@delete_id", delete_id);
                 deleteCommand.ExecuteNonQuery();
                 Console.WriteLine("Data deleted successfully");
             }
